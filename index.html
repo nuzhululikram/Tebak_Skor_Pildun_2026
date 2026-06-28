@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tebak Skor & Juara Dunia — Piala Dunia FIFA 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===================== HEADER / NAVBAR ===================== -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-icon">🏆</span>
+      <div>
+        <h1>Tebak Skor WC 2026</h1>
+        <p>Piala Dunia FIFA — Amerika Serikat • Kanada • Meksiko</p>
+      </div>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Buka menu">☰</button>
+    <nav class="main-nav" id="mainNav">
+      <button class="nav-link active" data-tab="dashboard">📅 Jadwal</button>
+      <button class="nav-link" data-tab="bracket">🗂️ Bracket</button>
+      <button class="nav-link" data-tab="tebakskor">🎯 Tebak Skor</button>
+      <button class="nav-link" data-tab="tebakjuara">👑 Tebak Juara</button>
+      <button class="nav-link" data-tab="leaderboard">📊 Leaderboard</button>
+    </nav>
+    <div class="user-chip">
+      <input type="text" id="globalUsername" placeholder="Nama kamu..." maxlength="20">
+      <span class="user-points" id="globalUserPoints"></span>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<main class="app-main">
+
+  <!-- ---------- TAB 1: DASHBOARD / JADWAL ---------- -->
+  <section class="tab-panel active" id="tab-dashboard">
+    <div class="panel-head">
+      <h2>📅 Dashboard — Jadwal Babak 16 Besar</h2>
+      <p class="muted">Jadwal di bawah adalah <strong>contoh / placeholder</strong> mengikuti format Piala Dunia 2026 (48 tim). Edit nama tim di <code>js/data.js</code> setelah hasil babak grup &amp; 32 besar resmi diketahui.</p>
+    </div>
+
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <span class="stat-num" id="statTotalMatches">0</span>
+        <span class="stat-label">Pertandingan 16 Besar</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="statTotalPredictions">0</span>
+        <span class="stat-label">Total Prediksi Masuk</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="statTotalUsers">0</span>
+        <span class="stat-label">Peserta Tebakan</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="statChampionGuesses">0</span>
+        <span class="stat-label">Tebakan Juara Dunia</span>
+      </div>
+    </div>
+
+    <div class="match-grid" id="dashboardMatchGrid"></div>
+  </section>
+
+  <!-- ---------- TAB 2: BRACKET ---------- -->
+  <section class="tab-panel" id="tab-bracket">
+    <div class="panel-head">
+      <h2>🗂️ Bracket Fase Gugur — Prediksi Hingga Final</h2>
+      <p class="muted">Klik tim pemenang di setiap laga untuk mengisi bagan secara otomatis ke babak berikutnya. Prediksi tersimpan otomatis di browser kamu.</p>
+    </div>
+
+    <div class="bracket-actions">
+      <button class="btn btn-secondary" id="resetBracketBtn">🔄 Reset Bracket Saya</button>
+      <button class="btn btn-primary" id="saveBracketBtn">💾 Simpan Bracket</button>
+      <span class="save-indicator" id="bracketSaveIndicator"></span>
+    </div>
+
+    <div class="bracket-wrapper" id="bracketWrapper"></div>
+  </section>
+
+  <!-- ---------- TAB 3: TEBAK SKOR ---------- -->
+  <section class="tab-panel" id="tab-tebakskor">
+    <div class="panel-head">
+      <h2>🎯 Tebak Skor Pertandingan</h2>
+      <p class="muted">Pilih pertandingan 16 besar, masukkan nama, lalu tuliskan prediksi skormu. Tebakan skor tepat = <strong>3 poin</strong>, tebakan selisih/hasil benar (menang/seri/kalah) tapi skor salah = <strong>1 poin</strong>.</p>
+    </div>
+
+    <form class="predict-form" id="scoreGuessForm">
+      <div class="form-row">
+        <label for="guessUserName">Nama Kamu</label>
+        <input type="text" id="guessUserName" placeholder="Contoh: Budi" maxlength="20" required>
+      </div>
+
+      <div class="form-row">
+        <label for="matchSelect">Pilih Pertandingan</label>
+        <select id="matchSelect" required></select>
+      </div>
+
+      <div class="score-input-row">
+        <div class="team-score-box" id="teamABox">
+          <span class="team-flag" id="teamAFlag">🏳️</span>
+          <span class="team-name" id="teamAName">Tim A</span>
+          <input type="number" id="scoreA" min="0" max="30" value="0" required>
+        </div>
+        <span class="vs-label">VS</span>
+        <div class="team-score-box" id="teamBBox">
+          <span class="team-flag" id="teamBFlag">🏳️</span>
+          <span class="team-name" id="teamBName">Tim B</span>
+          <input type="number" id="scoreB" min="0" max="30" value="0" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">✅ Simpan Tebakan Skor</button>
+      <p class="form-msg" id="scoreFormMsg"></p>
+    </form>
+
+    <div class="predictions-list-wrap">
+      <div class="list-head-row">
+        <h3>📋 Semua Tebakan Skor Pengguna</h3>
+        <select id="filterMatchPredictions">
+          <option value="all">Semua Pertandingan</option>
+        </select>
+      </div>
+      <div class="predictions-list" id="scorePredictionsList"></div>
+    </div>
+  </section>
+
+  <!-- ---------- TAB 4: TEBAK JUARA ---------- -->
+  <section class="tab-panel" id="tab-tebakjuara">
+    <div class="panel-head">
+      <h2>👑 Tebak Juara Dunia 2026</h2>
+      <p class="muted">Tuliskan nama negara pilihanmu sebagai juara dunia. Jika tepat saat turnamen selesai, kamu mendapat <strong>10 poin</strong>!</p>
+    </div>
+
+    <form class="predict-form champion-form" id="championGuessForm">
+      <div class="form-row">
+        <label for="championUserName">Nama Kamu</label>
+        <input type="text" id="championUserName" placeholder="Contoh: Siti" maxlength="20" required>
+      </div>
+      <div class="form-row">
+        <label for="championCountry">Negara Pilihan Juara Dunia</label>
+        <input type="text" id="championCountry" list="countryList" placeholder="Contoh: Brazil" maxlength="30" required>
+        <datalist id="countryList"></datalist>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">👑 Simpan Tebakan Juara</button>
+      <p class="form-msg" id="championFormMsg"></p>
+    </form>
+
+    <div class="champion-results-wrap">
+      <h3>🌍 Daftar Tebakan Juara Dunia Semua Pengguna</h3>
+      <div class="champion-tally" id="championTally"></div>
+      <div class="champion-list" id="championGuessList"></div>
+    </div>
+  </section>
+
+  <!-- ---------- TAB 5: LEADERBOARD ---------- -->
+  <section class="tab-panel" id="tab-leaderboard">
+    <div class="panel-head">
+      <h2>📊 Papan Peringkat</h2>
+      <p class="muted">Poin dihitung otomatis berdasarkan hasil resmi yang diinput Admin di bagian "Input Hasil Resmi" di bawah papan peringkat.</p>
+    </div>
+
+    <div class="leaderboard-wrap">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama</th>
+            <th>Poin Skor</th>
+            <th>Poin Bracket</th>
+            <th>Poin Juara</th>
+            <th>Total Poin</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody"></tbody>
+      </table>
+      <p class="empty-state" id="leaderboardEmpty">Belum ada data peringkat. Tambahkan tebakan dan hasil resmi terlebih dahulu.</p>
+    </div>
+
+    <details class="admin-box">
+      <summary>⚙️ Input Hasil Resmi (Admin) — untuk hitung poin otomatis</summary>
+      <div class="admin-content">
+        <h4>Hasil Resmi Pertandingan</h4>
+        <div class="admin-row" id="adminMatchResultRow">
+          <select id="adminMatchSelect"></select>
+          <input type="number" id="adminScoreA" placeholder="Skor Tim A" min="0">
+          <input type="number" id="adminScoreB" placeholder="Skor Tim B" min="0">
+          <button class="btn btn-secondary" id="adminSaveResultBtn">Simpan Hasil</button>
+        </div>
+        <h4>Juara Dunia Resmi</h4>
+        <div class="admin-row">
+          <input type="text" id="adminChampionInput" placeholder="Nama negara juara dunia">
+          <button class="btn btn-secondary" id="adminSaveChampionBtn">Simpan Juara</button>
+        </div>
+        <p class="muted small">Bagian ini hanya untuk simulasi/demo karena data disimpan di LocalStorage browser (tidak ada server). Untuk skala publik, hubungkan ke backend/database.</p>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <p>Dibuat untuk komunitas penggemar sepak bola 🇮🇩 — Data tim &amp; jadwal bersifat contoh, sesuaikan setelah hasil resmi diumumkan FIFA.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/bracket.js"></script>
+<script src="js/scoreGuess.js"></script>
+<script src="js/championGuess.js"></script>
+<script src="js/leaderboard.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
